@@ -1,0 +1,13 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+label, select, button, .smap-checkbox {
+    margin: 10px 0;
+    display: block;
+}
+
+#smaps-list {
+    margin-top: 20px;
+}
