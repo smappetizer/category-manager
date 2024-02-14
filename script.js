@@ -156,4 +156,8 @@ document.getElementById('assign-category').addEventListener('click', assignCateg
 document.getElementById('remove-category').addEventListener('click', removeCategories);
 
 // Initialize categories on page load
-loadCategories();
+if(apiToken) {
+    loadCategories();
+} else {
+    alert('No token given, please pass your API token via URL (?token=<token>)');
+}
