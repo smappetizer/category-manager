@@ -74,29 +74,49 @@ const loadSmaps = async () => {
     });
 };
 
-// Assigns a category to a list of smaps
-const assignCategoryToSmaps = async (smapIds, categoryId, isAssigned) => {
-    for (const smapId of smapIds) {
-        try {
-            const requestBody = {
-                Categories: [
-                    { categoryId: categoryId, isAssigned: isAssigned }
-                ]
-            };
+// Verzögert die Ausführung um eine bestimmte Anzahl von Sekunden
+const delay = (seconds) => new Promise(resolve => setTimeout(resolve, seconds * 1000));
 
-            const response = await fetch(`https://platform.smapone.com/backend/intern/smaps/overview/${smapId}/categories`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': authHeader,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestBody)
-            });
-            if (!response.ok) {
-                throw new Error(`Failed to ${isAssigned ? 'assign' : 'remove'} category from smap ${smapId}`);
+// Versucht, die Kategoriezuweisung nach einem Fehler erneut durchzuführen, mit Verzögerung bei Rate-Limiting
+const assignCategoryToSmaps = async (smapIds, categoryId, isAssigned, maxRetries = 3, retryDelay = 60) => {
+    for (const smapId of smapIds) {
+        let retries = 0;
+
+        while (retries < maxRetries) {
+            try {
+                const requestBody = {
+                    Categories: [
+                        { categoryId: categoryId, isAssigned: isAssigned }
+                    ]
+                };
+
+                const response = await fetch(`https://platform.smapone.com/backend/intern/smaps/overview/${smapId}/categories`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': authHeader,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (response.ok) {
+                    console.log(`Category ${isAssigned ? 'assigned' : 'removed'} to/from smap ${smapId} successfully.`);
+                    break; // Success, exit the loop
+                } else {
+                    // Handle non-429 HTTP errors immediately without retrying
+                    console.error(`HTTP error ${response.status} for smap ${smapId}; not retrying.`);
+                    break;
+                }
+            } catch (error) {
+                // Handle network errors or potential 429 errors
+                console.error(`Error for smap ${smapId}: ${error.message}. Retrying in ${retryDelay} seconds...`);
+                retries++;
+                await delay(retryDelay);
             }
-        } catch (error) {
-            console.error(`Error ${isAssigned ? 'assigning' : 'removing'} category from smap ${smapId}:`, error);
+        }
+
+        if (retries === maxRetries) {
+            console.error(`Failed to ${isAssigned ? 'assign' : 'remove'} category for smap ${smapId} after ${maxRetries} attempts.`);
         }
     }
 };
