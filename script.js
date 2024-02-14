@@ -63,11 +63,11 @@ const loadSmaps = async () => {
     const smaps = await fetchSmaps();
     
     // Sortiert die smaps alphabetisch nach ihrem Titel
-    smaps.sort((a, b) => a.title.localeCompare(b.title));
+    smaps.sort((a, b) => a.name.localeCompare(b.name));
 
     const listElement = document.getElementById('smaps-list');
     listElement.innerHTML = ''; // Clear current list
-    smaps.sort().forEach(smap => {
+    smaps.forEach(smap => {
         const label = document.createElement('label');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
