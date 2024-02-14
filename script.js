@@ -63,7 +63,7 @@ const loadSmaps = async () => {
     const smaps = await fetchSmaps();
     const listElement = document.getElementById('smaps-list');
     listElement.innerHTML = ''; // Clear current list
-    smaps.forEach(smap => {
+    smaps.sort().forEach(smap => {
         const label = document.createElement('label');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
@@ -117,6 +117,20 @@ const removeCategories = async () => {
     alert('Kategorien erfolgreich entfernt');
 };
 
+// Funktion zum Umschalten aller Checkboxen
+const toggleAllCheckboxes = (toggle) => {
+    const checkboxes = document.querySelectorAll('#smaps-list input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = toggle;
+    });
+};
+
+// Event-Listener für die "Alle auswählen/abwählen" Checkbox
+document.getElementById('toggle-all').addEventListener('change', function() {
+    toggleAllCheckboxes(this.checked);
+});
+
+// Vorhandene Event-Listener und Initialisierungsfunktionen...
 document.getElementById('load-smaps').addEventListener('click', loadSmaps);
 document.getElementById('assign-category').addEventListener('click', assignCategories);
 document.getElementById('remove-category').addEventListener('click', removeCategories);
