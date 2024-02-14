@@ -88,9 +88,9 @@ const loadSmaps = async () => {
         const label = document.createElement('label');
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.value = smap.id;
+        checkbox.value = smap.smapId;
         label.appendChild(checkbox);
-        label.append(` ${smap.title}`);
+        label.append(` ${smap.name}`);
         listElement.appendChild(label);
     });
 };
