@@ -61,6 +61,10 @@ const loadCategories = async () => {
 // Load smaps and display them as checkboxes
 const loadSmaps = async () => {
     const smaps = await fetchSmaps();
+    
+    // Sortiert die smaps alphabetisch nach ihrem Titel
+    smaps.sort((a, b) => a.title.localeCompare(b.title));
+
     const listElement = document.getElementById('smaps-list');
     listElement.innerHTML = ''; // Clear current list
     smaps.sort().forEach(smap => {
